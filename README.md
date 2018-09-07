@@ -11,19 +11,19 @@ Because getting and processing the data is time consuming，so we had processed 
 tar -zxvf data.tar.gz
 mv data/* .
 ```
-When you see the files below, you can do the next work.
-> cat_voc.pkl
-> mid_voc.pkl
-> uid_voc.pkl
-> local_train_splitByUser
-> local_test_splitByUser
+When you see the files below, you can do the next work. 
+- cat_voc.pkl 
+- mid_voc.pkl 
+- uid_voc.pkl 
+- local_train_splitByUser 
+- local_test_splitByUser 
 ## train model
 ```
 python train.py train [model name] 
 ```
-The model blelow had been supported:
-> DNN
-> PNN
-> Wide (Wide&Deep NN)
-> DIN  (https://arxiv.org/abs/1706.06978)
-> DIEN (Our model)
+The model blelow had been supported: 
+- DNN 
+- PNN 
+- Wide (Wide&Deep NN) 
+- DIN  (https://arxiv.org/abs/1706.06978) 
+- DIEN (Our model) 
