@@ -1,4 +1,5 @@
-# dien
+# Deep Interest Evolution Network for Click-Through Rate Prediction
+https://arxiv.org/abs/1809.03672
 ## prepare data
 ### method 1
 You can get the data from amazon website and process it using the script
