@@ -26,4 +26,4 @@ The model blelow had been supported:
 - PNN 
 - Wide (Wide&Deep NN) 
 - DIN  (https://arxiv.org/abs/1706.06978) 
-- DIEN (Our model) 
+- DIEN (https://arxiv.org/pdf/1809.03672.pdf) 
