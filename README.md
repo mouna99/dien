@@ -22,6 +22,8 @@ When you see the files below, you can do the next work.
 - uid_voc.pkl 
 - local_train_splitByUser 
 - local_test_splitByUser 
+- reviews-info
+- item-info
 ## train model
 ```
 python train.py train [model name] 
