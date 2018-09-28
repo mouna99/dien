@@ -9,8 +9,12 @@ sh prepare_data.sh
 ### method 2 (recommended)
 Because getting and processing the data is time consuming，so we had processed it and upload it for you. You can unzip it to use directly.
 ```
-tar -zxvf data.tar.gz
+tar -jxvf data.tar.gz
 mv data/* .
+tar -jxvf data1.tar.gz
+mv data1/* .
+tar -jxvf data2.tar.gz
+mv data2/* .
 ```
 When you see the files below, you can do the next work. 
 - cat_voc.pkl 
