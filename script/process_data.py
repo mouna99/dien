@@ -29,11 +29,11 @@ def manual_join():
     for line in f_rev:
         line = line.strip()
         items = line.split("\t")
-        loctime = time.localtime(float(items[-1]))
-        items[-1] = time.strftime('%Y-%m-%d', loctime)
+        #loctime = time.localtime(float(items[-1]))
+        #items[-1] = time.strftime('%Y-%m-%d', loctime)
         if items[0] not in user_map:
             user_map[items[0]]= []
-        user_map[items[0]].append("\t".join(items))
+        user_map[items[0]].append(("\t".join(items), float(items[-1])))
         item_list.append(items[1])
     f_meta = open("item-info", "r")
     meta_map = {}
@@ -44,7 +44,8 @@ def manual_join():
             arr = line.strip().split("\t")
     fo = open("jointed-new", "w")
     for key in user_map:
-        for line in user_map[key]:
+        sorted_user_bh = sorted(user_map[key], key=lambda x:x[1])
+        for line in sorted_user_bh:
             items = line.split("\t")
             asin = items[1]
             j = 0
@@ -52,7 +53,7 @@ def manual_join():
                 asin_neg_index = random.randint(0, len(item_list) - 1)
                 asin_neg = item_list[asin_neg_index]
                 if asin_neg == asin:
-                    continue 
+                    continue
                 items[1] = asin_neg
                 print>>fo, "0" + "\t" + "\t".join(items) + "\t" + meta_map[asin_neg]
                 j += 1
