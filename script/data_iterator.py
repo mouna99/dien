@@ -36,7 +36,8 @@ class DataIterator:
                  skip_empty=False,
                  shuffle_each_epoch=False,
                  sort_by_length=True,
-                 max_batch_size=20):
+                 max_batch_size=20,
+                 minlen=None):
         if shuffle_each_epoch:
             self.source_orig = source
             self.source = shuffle.main(self.source_orig, temporary=True)
@@ -76,6 +77,7 @@ class DataIterator:
 
         self.batch_size = batch_size
         self.maxlen = maxlen
+        self.minlen = minlen
         self.skip_empty = skip_empty
 
         self.n_uid = len(self.source_dicts[0])
@@ -163,6 +165,9 @@ class DataIterator:
 
                 #if len(mid_list) > self.maxlen:
                 #    continue
+                if self.minlen != None:
+                    if len(mid_list) >= self.minlen:
+                        continue
                 if self.skip_empty and (not mid_list):
                     continue
 

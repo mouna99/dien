@@ -143,10 +143,10 @@ class VecAttGRUCell(RNNCell):
     new_h = u * state + (1 - u) * c
     return new_h, new_h
 
-def prelu(_x, scope=None):
+def prelu(_x, scope=''):
     """parametric ReLU activation"""
     with tf.variable_scope(name_or_scope=scope, default_name="prelu"):
-        _alpha = tf.get_variable("prelu", shape=_x.get_shape()[-1],
+        _alpha = tf.get_variable("prelu_"+scope, shape=_x.get_shape()[-1],
                                  dtype=_x.dtype, initializer=tf.constant_initializer(0.1))
         return tf.maximum(0.0, _x) + _alpha * tf.minimum(0.0, _x)
 

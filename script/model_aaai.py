@@ -3,7 +3,7 @@ from tensorflow.python.ops.rnn_cell import GRUCell
 from tensorflow.python.ops.rnn_cell import LSTMCell
 from tensorflow.python.ops.rnn import bidirectional_dynamic_rnn as bi_rnn
 #from tensorflow.python.ops.rnn import dynamic_rnn
-from rnn import dynamic_rnn
+from rnn import dynamic_rnn 
 from utils import *
 from Dice import dice
 
@@ -300,7 +300,7 @@ class Model_DNN(Model):
         super(Model_DNN, self).__init__(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE,
                                                           ATTENTION_SIZE,
                                                           use_negsampling)
-
+        
         inp = tf.concat([self.uid_batch_embedded, self.item_eb, self.item_his_eb_sum], 1)
         self.build_fcn_net(inp, use_dice=False)
 
@@ -397,3 +397,20 @@ class Model_DIN_V2_Gru_Vec_attGru(Model):
         #inp = tf.concat([self.uid_batch_embedded, self.item_eb, final_state2, self.item_his_eb_sum], 1)
         inp = tf.concat([self.uid_batch_embedded, self.item_eb, self.item_his_eb_sum, self.item_eb * self.item_his_eb_sum, final_state2], 1)
         self.build_fcn_net(inp, use_dice=True)
+
+class Model_SCP(Model):
+    def __init__(self, n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE, use_negsampling=False):
+        super(Model_SCP, self).__init__(n_uid, n_mid, n_cat,
+                                                       EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE,
+                                                       use_negsampling)
+
+        # RNN layer(-s)
+        with tf.name_scope('rnn_1'):
+            rnn_outputs, final_state = dynamic_rnn(GRUCell(HIDDEN_SIZE), inputs=self.item_his_eb,
+                                         sequence_length=self.seq_len_ph, dtype=tf.float32,
+                                         scope="gru1")
+            # rnn_fea = tf.reduce_sum(run_outputs, 1)
+            tf.summary.histogram('GRU_outputs', final_state)
+
+        inp = tf.concat([self.uid_batch_embedded, self.item_eb, self.item_his_eb_sum, self.item_eb * self.item_his_eb_sum, final_state], 1)
+        self.build_fcn_net(inp, use_dice=False)

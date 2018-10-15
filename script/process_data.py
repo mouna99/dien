@@ -2,16 +2,16 @@ import sys
 import random
 import time
 
-def process_meta():
-    fi = open("meta_Electronics.json", "r")
+def process_meta(file):
+    fi = open(file, "r")
     fo = open("item-info", "w")
     for line in fi:
         obj = eval(line)
         cat = obj["categories"][0][-1]
         print>>fo, obj["asin"] + "\t" + cat
 
-def process_reviews():
-    fi = open("reviews_Electronics_5.json", "r")
+def process_reviews(file):
+    fi = open(file, "r")
     user_map = {}
     fo = open("reviews-info", "w")
     for line in fi:
@@ -45,7 +45,7 @@ def manual_join():
     fo = open("jointed-new", "w")
     for key in user_map:
         sorted_user_bh = sorted(user_map[key], key=lambda x:x[1])
-        for line in sorted_user_bh:
+        for line, t in sorted_user_bh:
             items = line.split("\t")
             asin = items[1]
             j = 0
@@ -53,7 +53,7 @@ def manual_join():
                 asin_neg_index = random.randint(0, len(item_list) - 1)
                 asin_neg = item_list[asin_neg_index]
                 if asin_neg == asin:
-                    continue
+                    continue 
                 items[1] = asin_neg
                 print>>fo, "0" + "\t" + "\t".join(items) + "\t" + meta_map[asin_neg]
                 j += 1
@@ -95,7 +95,7 @@ def split_test():
                 print>>fo, "20190119" + "\t" + line
         i += 1
 
-process_meta()
-process_reviews()
+process_meta(sys.argv[1])
+process_reviews(sys.argv[2])
 manual_join()
 split_test()

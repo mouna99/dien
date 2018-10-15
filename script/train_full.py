@@ -1,14 +1,14 @@
 import numpy
 from data_iterator import DataIterator
 import tensorflow as tf
-from model_aaai import *
+from model import *
 import time
 import random
 import sys
 from utils import *
 
 EMBEDDING_DIM = 18
-HIDDEN_SIZE = 18 * 2
+HIDDEN_SIZE = 18 * 2 
 ATTENTION_SIZE = 18 * 2
 best_auc = 0.0
 
@@ -49,7 +49,7 @@ def prepare_data(input, target, maxlen = None, return_neg = False):
             return None, None, None, None
 
     n_samples = len(seqs_mid)
-    maxlen_x = numpy.max(lengths_x)
+    maxlen_x = numpy.max(lengths_x) + 1
     neg_samples = len(noclk_seqs_mid[0][0])
 
     mid_his = numpy.zeros((n_samples, maxlen_x)).astype('int64')
@@ -58,7 +58,7 @@ def prepare_data(input, target, maxlen = None, return_neg = False):
     noclk_cat_his = numpy.zeros((n_samples, maxlen_x, neg_samples)).astype('int64')
     mid_mask = numpy.zeros((n_samples, maxlen_x)).astype('float32')
     for idx, [s_x, s_y, no_sx, no_sy] in enumerate(zip(seqs_mid, seqs_cat, noclk_seqs_mid, noclk_seqs_cat)):
-        mid_mask[idx, :lengths_x[idx]] = 1.
+        mid_mask[idx, :lengths_x[idx] + 1] = 1.
         mid_his[idx, :lengths_x[idx]] = s_x
         cat_his[idx, :lengths_x[idx]] = s_y
         noclk_mid_his[idx, :lengths_x[idx], :] = no_sx
@@ -122,24 +122,48 @@ def train(
         train_data = DataIterator(train_file, uid_voc, mid_voc, cat_voc, batch_size, maxlen, shuffle_each_epoch=False)
         test_data = DataIterator(test_file, uid_voc, mid_voc, cat_voc, batch_size, maxlen)
         n_uid, n_mid, n_cat = train_data.get_n()
-        if model_type == 'DNN':
+        if model_type == 'DNN': 
             model = Model_DNN(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         elif model_type == 'PNN':
             model = Model_PNN(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
 	elif model_type == 'Wide':
             model = Model_WideDeep(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+        elif model_type == 'deepFM':
+            model = Model_deepFM(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         elif model_type == 'DIN':
             model = Model_DIN(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+        elif model_type == 'DIN-V2-bigru-neg':
+            model = Model_DIN_V2_Bigru_Neg(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+        elif model_type == 'DIN-V2-gru-neg':
+            model = Model_DIN_V2_gru_Neg(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         elif model_type == 'DIN-V2-gru-att-gru':
             model = Model_DIN_V2_Gru_att_Gru(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         elif model_type == 'DIN-V2-gru-gru-att':
             model = Model_DIN_V2_Gru_Gru_att(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+	elif model_type == 'DIN-V2-gru-att':
+            model = Model_DIN_V2_Gru_att(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         elif model_type == 'DIN-V2-gru-qa-attGru':
             model = Model_DIN_V2_Gru_QA_attGru(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         elif model_type == 'DIN-V2-gru-vec-attGru':
             model = Model_DIN_V2_Gru_Vec_attGru(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
-	elif model_type == 'DIEN':
+	elif model_type == 'DIN-V2-gru-vec-attGru-Neg':
             model = Model_DIN_V2_Gru_Vec_attGru_Neg(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+	elif model_type == 'SCP':
+            model = Model_SCP(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+	elif model_type == 'DIN-V2-bigru-att-gru':
+	    model = Model_DIN_V2_BiGru_att_Gru(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+        elif model_type == 'DIN-V2-bigru-gru-att':
+            model = Model_DIN_V2_BiGru_Gru_att(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+        elif model_type == 'DIN-V2-bigru-qa-attGru':
+            model = Model_DIN_V2_BiGru_QA_attGru(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+        elif model_type == 'DIN-V2-bigru-vec-attGru':
+            model = Model_DIN_V2_BiGru_Vec_attGru(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+        elif model_type == 'DIN-V2-selfAtt-neg':
+            model = Model_DIN_V2_self_attention(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+        elif model_type == 'DIN-V2-cnn-neg':         
+            model = Model_DIN_V2_cnn(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+	elif model_type == 'DIN-V2-gru-att':
+            model = Model_DIN_V2_Gru_att(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         else:
             print ("Invalid model_type : %s", model_type)
             return
@@ -175,7 +199,7 @@ def train(
                 if (iter % save_iter) == 0:
                     print('save model iter: %d' %(iter))
                     model.save(sess, model_path+"--"+str(iter))
-            lr *= 0.5
+            #lr *= 0.5
 
 def test(
         train_file = "local_train_splitByUser",
@@ -195,24 +219,47 @@ def test(
         train_data = DataIterator(train_file, uid_voc, mid_voc, cat_voc, batch_size, maxlen)
         test_data = DataIterator(test_file, uid_voc, mid_voc, cat_voc, batch_size, maxlen)
         n_uid, n_mid, n_cat = train_data.get_n()
-        if model_type == 'DNN':
+        if model_type == 'DNN': 
             model = Model_DNN(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         elif model_type == 'PNN':
             model = Model_PNN(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         elif model_type == 'Wide':
 	    model = Model_WideDeep(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+	elif model_type == 'deepFM':
+            model = Model_deepFM(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         elif model_type == 'DIN':
             model = Model_DIN(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+	elif model_type == 'SCP':
+            model = Model_SCP(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+        elif model_type == 'DIN-V2-bigru-neg':
+            model = Model_DIN_V2_Bigru_Neg(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+        elif model_type == 'DIN-V2-gru-neg':
+            model = Model_DIN_V2_gru_Neg(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         elif model_type == 'DIN-V2-gru-att-gru':
             model = Model_DIN_V2_Gru_att_Gru(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         elif model_type == 'DIN-V2-gru-gru-att':
             model = Model_DIN_V2_Gru_Gru_att(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+	elif model_type == 'DIN-V2-gru-att':
+            model = Model_DIN_V2_Gru_att(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+
         elif model_type == 'DIN-V2-gru-qa-attGru':
             model = Model_DIN_V2_Gru_QA_attGru(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         elif model_type == 'DIN-V2-gru-vec-attGru':
-            model = Model_DIN_V2_Gru_Vec_attGru(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
-	elif model_type == 'DIEN':
+            model = Model_DIN_V2_Gru_Vec_attGru(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE) 
+	elif model_type == 'DIN-V2-gru-vec-attGru-Neg':
             model = Model_DIN_V2_Gru_Vec_attGru_Neg(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+	elif model_type == 'DIN-V2-bigru-att-gru':
+            model = Model_DIN_V2_BiGru_att_Gru(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+        elif model_type == 'DIN-V2-bigru-gru-att':
+            model = Model_DIN_V2_BiGru_Gru_att(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+        elif model_type == 'DIN-V2-bigru-qa-attGru':
+            model = Model_DIN_V2_BiGru_QA_attGru(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+        elif model_type == 'DIN-V2-bigru-vec-attGru':
+            model = Model_DIN_V2_BiGru_Vec_attGru(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+        elif model_type == 'DIN-V2-selfAtt-neg':
+            model = Model_DIN_V2_self_attention(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
+        elif model_type == 'DIN-V2-cnn-neg':
+            model = Model_DIN_V2_cnn(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         else:
             print ("Invalid model_type : %s", model_type)
             return
