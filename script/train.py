@@ -1,7 +1,7 @@
 import numpy
 from data_iterator import DataIterator
 import tensorflow as tf
-from model_aaai import *
+from model import *
 import time
 import random
 import sys
