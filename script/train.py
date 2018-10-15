@@ -111,7 +111,7 @@ def train(
         batch_size = 128,
         maxlen = 100,
         test_iter = 100,
-        save_iter = 1500,
+        save_iter = 100,
         model_type = 'DNN',
 	seed = 2,
 ):
@@ -220,7 +220,10 @@ def test(
         print('test_auc: %.4f ----test_loss: %.4f ---- test_accuracy: %.4f ---- test_aux_loss: %.4f' % eval(sess, test_data, model, model_path))
 
 if __name__ == '__main__':
-    SEED = int(sys.argv[3])
+    if len(sys.argv) == 4:
+        SEED = int(sys.argv[3])
+    else:
+        SEED = 3
     tf.set_random_seed(SEED)
     numpy.random.seed(SEED)
     random.seed(SEED)
