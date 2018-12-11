@@ -35,4 +35,4 @@ The model blelow had been supported:
 - DIN  (https://arxiv.org/abs/1706.06978) 
 - DIEN (https://arxiv.org/pdf/1809.03672.pdf) 
 
-Note: when we did this research our tf version was 1.4
+Note: we use tensorflow 1.4.
