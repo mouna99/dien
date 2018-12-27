@@ -21,7 +21,7 @@ class Model(object):
             self.lr = tf.placeholder(tf.float64, [])
             self.use_negsampling =use_negsampling
             if use_negsampling:
-                self.noclk_mid_batch_ph = tf.placeholder(tf.int32, [None, None, None], name='noclk_mid_batch_ph')
+                self.noclk_mid_batch_ph = tf.placeholder(tf.int32, [None, None, None], name='noclk_mid_batch_ph') #generate 3 item IDs from negative sampling.
                 self.noclk_cat_batch_ph = tf.placeholder(tf.int32, [None, None, None], name='noclk_cat_batch_ph')
 
         # Embedding layer
@@ -49,9 +49,9 @@ class Model(object):
         self.item_his_eb_sum = tf.reduce_sum(self.item_his_eb, 1)
         if self.use_negsampling:
             self.noclk_item_his_eb = tf.concat(
-                [self.noclk_mid_his_batch_embedded[:, :, 0, :], self.noclk_cat_his_batch_embedded[:, :, 0, :]], -1)
+                [self.noclk_mid_his_batch_embedded[:, :, 0, :], self.noclk_cat_his_batch_embedded[:, :, 0, :]], -1)# 0 means only using the first negative item ID. 3 item IDs are inputed in the line 24.
             self.noclk_item_his_eb = tf.reshape(self.noclk_item_his_eb,
-                                                [-1, tf.shape(self.noclk_mid_his_batch_embedded)[1], 36])
+                                                [-1, tf.shape(self.noclk_mid_his_batch_embedded)[1], 36])# cat embedding 18 concate item embedding 18.
 
             self.noclk_his_eb = tf.concat([self.noclk_mid_his_batch_embedded, self.noclk_cat_his_batch_embedded], -1)
             self.noclk_his_eb_sum_1 = tf.reduce_sum(self.noclk_his_eb, 2)
