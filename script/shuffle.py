@@ -7,7 +7,7 @@ from subprocess import call
 
 
 def main(file, temporary=False):
-    tf_os, tpath = tempfile.mkstemp(dir='/home/mouna.mn/code/DIN-V2-CODE')
+    tf_os, tpath = tempfile.mkstemp(dir='~/DIN-V2-CODE')
     tf = open(tpath, 'w')
 
     fd = open(file, "r")
