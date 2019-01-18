@@ -166,7 +166,7 @@ class DataIterator:
                 #if len(mid_list) > self.maxlen:
                 #    continue
                 if self.minlen != None:
-                    if len(mid_list) >= self.minlen:
+                    if len(mid_list) <= self.minlen:
                         continue
                 if self.skip_empty and (not mid_list):
                     continue
