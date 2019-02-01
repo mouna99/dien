@@ -28,7 +28,7 @@ When you see the files below, you can do the next work.
 ```
 python train.py train [model name] 
 ```
-The model blelow had been supported: 
+The model below had been supported: 
 - DNN 
 - PNN 
 - Wide (Wide&Deep NN) 
