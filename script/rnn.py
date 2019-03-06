@@ -42,7 +42,7 @@ from tensorflow.python.util import nest
 
 # pylint: disable=protected-access
 _concat = rnn_cell_impl._concat
-_like_rnncell = rnn_cell_impl._like_rnncell
+#_like_rnncell = rnn_cell_impl._like_rnncell
 # pylint: enable=protected-access
 
 
@@ -549,8 +549,9 @@ def dynamic_rnn(cell, inputs, att_scores=None, sequence_length=None, initial_sta
     TypeError: If `cell` is not an instance of RNNCell.
     ValueError: If inputs is None or an empty list.
   """
-  if not _like_rnncell(cell):
-    raise TypeError("cell must be an instance of RNNCell")
+  #XXX
+  # if not _like_rnncell(cell):
+  #   raise TypeError("cell must be an instance of RNNCell")
 
   # By default, time_major==False and inputs are batch-major: shaped
   #   [batch, time, depth]
